@@ -48,7 +48,29 @@ return function(colors)
   -- LSP/Linters mistakenly show `undefined global` errors in the spec, they may
   -- support an annotation like the following. Consult your server documentation.
   ---@diagnostic disable: undefined-global
-  return lush(function()
+  return lush(function(injected_functions)
+    -- functions are injected via a table for future expansion
+    -- you probably want to alias it locally
+    local sym = injected_functions.sym
+    local TreeWarning = sym("@text.warning") or TSWarning
+    local TreeDanger = sym("@text.danger") or TSDanger
+    local TreeConstructor = sym("@constructor") or TSConstructor
+    local TreeField = sym("@field") or TSField
+    local TreeKeyword = sym("@keyword") or TSKeyword
+    local TreeKeywordFunction = sym("@keyword.function") or TSKeywordFunction
+    local TreeLabel = sym("@label") or TSLabel
+    local TreeOperator = sym("@operator") or TSOperator
+    local TreeParameter = sym("@parameter") or TSParameter
+    local TreeProperty = sym("@property") or TSProperty
+    local TreePunctDelimiter = sym("@punctuation.delimiter") or TSPunctDelimiter
+    local TreePunctBracket = sym("@punctuation.bracket") or TSPunctBracker
+    local TreePunctSpecial = sym("@punctuation.special") or TSPunctSpecial
+    local TreeStringRegex = sym("@string.regex") or TSStringRegex
+    local TreeStringEscape = sym("@string.escape") or TSStringEscape
+    local TreeVariable = sym("@variable") or TSVariable
+    local TreeVariableBuiltin = sym("@variable.builtin") or TSVariableBuiltin
+    local TreeTextReference = sym("@text.reference") or TSTextReference
+
     return {
       -- The following are the Neovim (as of 0.8.0-dev+100-g371dfb174) highlight
       -- groups, mostly used for styling UI elements.
@@ -159,7 +181,7 @@ return function(colors)
 
       Special        { fg = colors.accent11}, -- (*) Any special symbol
       SpecialChar    { Special }, --   Special character in a constant
-      -- Tag            { }, --   You can use CTRL-] on thisI
+      -- Tag            { }, --   You can use CTRL-] on this
       -- Delimiter      { }, --   Character that needs attention
       -- SpecialComment { }, --   Special things inside a comment (e.g. '\n')
       -- Debug          { }, --   Debugging statements
@@ -219,44 +241,44 @@ return function(colors)
       TSConstant           { Constant } , -- Constants identifiers. These might not be semantically constant. E.g. uppercase variables in Python.
       TSConstBuiltin       { Constant } , -- Built-in constant values: `nil` in Lua.
       TSConstMacro         { Constant } , -- Constants defined by macros: `NULL` in C.
-      TSConstructor        { Function } , -- Constructor calls and definitions: `{}` in Lua, and Java constructors.
+      TreeConstructor  { Function } , -- Constructor calls and definitions: `{}` in Lua, and Java constructors.
       TSDebug              { fg = colors.accent5 } , -- Debugging statements.
       TSDefine             { PreProc } , -- Preprocessor #define statements.
       TSError              { Error } , -- Syntax/parser errors. This might highlight large sections of code while the user is typing still incomplete code, use a sensible highlight.
       TSException          { Exception } , -- Exception related keywords: `try`, `except`, `finally` in Python.
-      TSField              { fg = colors.fg} , -- Object and struct fields.
+      TreeField        { fg = colors.fg} , -- Object and struct fields.
       TSFloat              { Number } , -- Floating-point number literals.
       TSFunction           { Function } , -- Function calls and definitions.
       TSFuncBuiltin        { Function } , -- Built-in functions: `print` in Lua.
       TSFuncMacro          { Function } , -- Macro defined functions (calls and definitions): each `macro_rules` in Rust.
       TSInclude            { Function } , -- File or module inclusion keywords: `#include` in C, `use` or `extern crate` in Rust.
-      TSKeyword            { Keyword } , -- Keywords that don't fit into other categories.
-      TSKeywordFunction    { fg = colors.accent7} , -- Keywords used to define a function: `function` in Lua, `def` and `lambda` in Python.
+      TreeKeyword      { Keyword } , -- Keywords that don't fit into other categories.
+      TreeKeywordFunction    { fg = colors.accent7} , -- Keywords used to define a function: `function` in Lua, `def` and `lambda` in Python.
       TSKeywordOperator    { fg = colors.accent5 } , -- Unary and binary operators that are English words: `and`, `or` in Python; `sizeof` in C.
       TSKeywordReturn      { fg = colors.accent7 } , -- Keywords like `return` and `yield`.
-      TSLabel              { Label } , -- GOTO labels: `label:` in C, and `::label::` in Lua.
+      TreeLabel        { Label } , -- GOTO labels: `label:` in C, and `::label::` in Lua.
       TSMethod             { Function } , -- Method calls and definitions.
       TSNamespace          { Type } , -- Identifiers referring to modules and namespaces.
       -- TSNone               { } , -- No highlighting (sets all highlight arguments to `NONE`). this group is used to clear certain ranges, for example, string interpolations. Don't change the values of this highlight group.
       TSNumber             { Number } , -- Numeric literals that don't fit into other categories.
-      TSOperator           { Operator } , -- Binary or unary operators: `+`, and also `->` and `*` in C.
-      TSParameter          { fg = colors.fg } , -- Parameters of a function.
-      TSParameterReference { TSParameter } , -- References to parameters of a function.
+      TreeOperator     { Operator } , -- Binary or unary operators: `+`, and also `->` and `*` in C.
+      TreeParameter    { fg = colors.fg } , -- Parameters of a function.
+      TSParameterReference { fg = colors.fg } , -- References to parameters of a function.
       TSPreProc            { PreProc } , -- Preprocessor #if, #else, #endif, etc.
-      TSProperty           { TSField } , -- Same as `TSField`.
-      TSPunctDelimiter     { Operator} , -- Punctuation delimiters: Periods, commas, semicolons, etc.
-      TSPunctBracket       { Operator} , -- Brackets, braces, parentheses, etc.
-      TSPunctSpecial       { Operator} , -- Special punctuation that doesn't fit into the previous categories.
-      TSRepeat             { Repeat} , -- Keywords related to loops: `for`, `while`, etc.
-      TSStorageClass       { StorageClass} , -- Keywords that affect how a variable is stored: `static`, `comptime`, `extern`, etc.
-      TSString             { String} , -- String literals.
-      TSStringRegex        { Character} , -- Regular expression literals.
-      TSStringEscape       { Character} , -- Escape characters within a string: `\n`, `\t`, etc.
-      TSStringSpecial      { Character} , -- Strings with special meaning that don't fit into the previous categories.
-      TSSymbol             { Character} , -- Identifiers referring to symbols or atoms.
-      TSTag                { Keyword} , -- Tags like HTML tag names.
-      TSTagAttribute       { Function} , -- HTML tag attributes.
-      TSTagDelimiter       { Operator} , -- Tag delimiters like `<` `>` `/`.
+      TreeProperty           { fg = colors.fg } , -- Same as `TSField`.
+      TreePunctDelimiter  { Operator } , -- Punctuation delimiters: Periods, commas, semicolons, etc.
+      TreePunctBracket       { Operator } , -- Brackets, braces, parentheses, etc.
+      TreePunctSpecial       { Operator } , -- Special punctuation that doesn't fit into the previous categories.
+      TSRepeat             { Repeat } , -- Keywords related to loops: `for`, `while`, etc.
+      TSStorageClass       { StorageClass } , -- Keywords that affect how a variable is stored: `static`, `comptime`, `extern`, etc.
+      TSString             { String } , -- String literals.
+      TreeStringRegex        { Character } , -- Regular expression literals.
+      TreeStringEscape       { Character } , -- Escape characters within a string: `\n`, `\t`, etc.
+      TSStringSpecial      { Character } , -- Strings with special meaning that don't fit into the previous categories.
+      TSSymbol             { Character } , -- Identifiers referring to symbols or atoms.
+      TSTag                { Keyword } , -- Tags like HTML tag names.
+      TSTagAttribute       { Function } , -- HTML tag attributes.
+      TSTagDelimiter       { Operator } , -- Tag delimiters like `<` `>` `/`.
       TSText               { Normal} , -- Non-structured text. Like text in a markup language.
       TSStrong             { gui = "bold"} , -- Text to be represented in bold.
       TSEmphasis           { gui = "italic"} , -- Text to be represented with emphasis.
@@ -266,16 +288,16 @@ return function(colors)
       TSLiteral            { fg = Character.fg} , -- Literal or verbatim text.
       TSURI                { fg = colors.fg3} , -- URIs like hyperlinks or email addresses.
       TSMath               { fg = colors.accent5 } , -- Math environments like LaTeX's `$ ... $`
-      TSTextReference      { fg = colors.accent8 } , -- Footnotes, text references, citations, etc.
+      TreeTextReference      { fg = colors.accent8 } , -- Footnotes, text references, citations, etc.
       TSEnvironment        { fg = colors.accent5} , -- Text environments of markup languages.
       TSEnvironmentName    { TSEnvironment } , -- Text/string indicating the type of text environment. Like the name of a `\begin` block in LaTeX.
       TSNote               { fg = colors.accent2 } , -- Text representation of an informational note.
-      TSWarning            { fg = colors.accent5 } , -- Text representation of a warning note.
-      TSDanger             { fg = colors.accent7 } , -- Text representation of a danger note.
+      TreeWarning            { fg = colors.accent5 } , -- Text representation of a warning note.
+      TreeDanger             { fg = colors.accent7 } , -- Text representation of a danger note.
       TSType               { Type } , -- Type (and class) definitions and annotations.
       TSTypeBuiltin        { Type } , -- Built-in types: `i32` in Rust.
-      TSVariable           { Identifier } , -- Variable names that don't fit into other categories.
-      TSVariableBuiltin    { fg = colors.accent5 } , -- Variable names defined by the language: `this` or `self` in Javascript.
+      TreeVariable           { Identifier } , -- Variable names that don't fit into other categories.
+      TreeVariableBuiltin    { fg = colors.accent5 } , -- Variable names defined by the language: `this` or `self` in Javascript.
     }
   end)
 end
