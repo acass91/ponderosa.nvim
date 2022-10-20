@@ -6,6 +6,7 @@
 - Terra
 ![preview](assets/terra.png)
 - Autumn
+![preview](assets/autumn.png)
 
 Made with [lush](https://github.com/rktjmp/lush.nvim)
 
