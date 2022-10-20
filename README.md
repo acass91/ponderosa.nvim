@@ -5,6 +5,7 @@
 ![preview](assets/faded.png)
 - Terra
 ![preview](assets/terra.png)
+- Autumn
 
 Made with [lush](https://github.com/rktjmp/lush.nvim)
 
@@ -20,7 +21,7 @@ use {
 
 ## Configuration
 Here is an example with the default config. 
-There are three dark themes available - default, faded, and terra.
+There are four dark themes available - default, faded, terra, and autumn.
 No light themes are available.
 
 ```lua

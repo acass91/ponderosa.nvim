@@ -3,7 +3,8 @@ M = {}
 M.themes = {
     "default",
     "faded",
-    "terra"
+    "terra",
+    "autumn"
 }
 
 ---Get the name of the theme to load
@@ -33,6 +34,8 @@ function M.load(theme)
         theme_table = require 'ponderosa.colors.faded'()
     elseif theme == "terra" then
         theme_table = require 'ponderosa.colors.terra'()
+    elseif theme == "autumn" then
+        theme_table = require 'ponderosa.colors.autumn'()
     end
 
     return theme_table
